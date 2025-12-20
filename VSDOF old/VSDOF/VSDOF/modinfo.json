@@ -1,0 +1,14 @@
+{
+  "type": "code",
+  "modid": "vsdof",
+  "name": "VSDOF",
+  "authors": [
+    "DF_Print"
+  ],
+  "description": "Full 6-DOF head tracking for Vintage Story",
+  "version": "1.0.0",
+  "dependencies": {
+    "game": ""
+  },
+  "side": "Client"
+}
