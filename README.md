@@ -1,69 +1,41 @@
-# Vintage Story Mod Template
+# VS DOF Head Tracking (Vintage Story mod)
 
-This repository contains a configured .NET 8 mod for Visual Studio, Visual Studio Code and Rider that let's you start Vintage Story and add your own code to it. Supports logging and as well as debugging.
+6DOF head tracking for Vintage Story using OpenTrack's FreeTrack shared memory output.
 
+## Features
+- Rotation (yaw, pitch, roll) and translation offsets.
+- Per-axis gains and clamps for translation.
+- Crouch mapped to head movement with hold or toggle mode.
+- In-game settings dialog and persistent config file.
+- Tracking suspended when the game is paused or the escape menu is open.
 
+## Requirements
+- Vintage Story client (net8 build).
+- OpenTrack (or another tracker that can output FreeTrack shared memory).
+- A head tracking source (TrackIR, webcam tracker, phone tracker, etc.).
+
+## Install
+1. Download the mod zip (or build it from source).
+2. Place the zip in your Vintage Story `Mods` folder.
+3. Launch Vintage Story.
 
 ## Usage
-- Get a copy of this template by either using the "Use this Template" on github or cloning it or downloading a .zip file.
-- Open the Project with your preferred IDE
-- Run the template
+1. Start OpenTrack and set Output to `FreeTrack 2.0 Enhanced`.
+2. Launch the game in first-person view.
+3. Press `Keypad *` to open the "Head Tracking Settings" dialog.
+4. Adjust gains, toggles, and crouch options as desired.
 
+## Configuration
+Settings are stored in `vsdof.json` in the Vintage Story mod config directory.
+You can edit values directly or use the in-game dialog:
+- Enable tracking, rotation, translation, and roll.
+- Yaw/pitch/roll gains.
+- Translation gains and max translation per axis.
+- Crouch threshold, hysteresis, axis (X/Y/Z), and mode (hold/toggle).
 
-The template uses the Cake build system to produce a mod ready to release for you.
-You can create a release with one of the following methods:
-- In Visual Studio and Rider Select to run the CakeBuilder Project.
-- In Visual Studio Code click on "Terminal" > "Run Task" > "package"
-- run the build.ps1 or build.sh
+## Build (from source)
+- Open project in VS Code -> Terminal -> Run Task -> "package"
 
-This will then produce the `vsdof_1.0.0.zip` inside the `Release` folder in the project root folder.
-
-
-##  Linux / Mac
-This sample is preconfigured for Windows if you want to use it on Linux or Mac you need to change the path for the Vintage Story (Server) binaries since those are now platform dependent with .NET 8. 
-
-### Rider
-If you use Rider on Linux or Mac you will need to change in
-`modtemplate/Properties/launchSettings.json`
-```
-"executablePath": "$(VINTAGE_STORY)/Vintagestory.exe",
-"executablePath": "$(VINTAGE_STORY)/VintagestoryServer.exe",
-```
-to 
-```
-"executablePath": "$(VINTAGE_STORY)/Vintagestory",
-"executablePath": "$(VINTAGE_STORY)/VintagestoryServer",
-```
-
-## Info General
-
-Vintage Story versions built on .NET 8 require mods to target `net8.0` (if you see CS1705 mentioning `System.Runtime, Version=8.0.0.0` this is the reason). Older Vintage Story versions built on .NET 7 can target `net7.0`.
-
-Further the new way of creating mods uses a [dotnet template package](https://www.nuget.org/packages/VintageStory.Mod.Templates/).
-
-This basically allows you to create a mod directly from Visual Studio, Rider or the command line (`dotnet new vsmod`) for more details how to use it see our [wiki page](https://wiki.vintagestory.at/index.php/Modding:Setting_up_your_Development_Environment).
-
-It supports options so you can easily add what ever dependency you may need in you next modding project.
-
-The new template also just houses a single mod by default (you can still manually add more if wanted). We think it is better to have the mods separated in their own repositories and Solutions.
-
-Further with the new template package and the cake build system there is not much need for the `vsmodtools` tool hopefully, which means less code to be maintained by us.
-
-We are also now supporting Visual Studio, Visual Studio Code and Rider with the new SDK style project and templates.
-
-## Cake build system
-
-The new template also comes with the cake build system https://cakebuild.net/ found in the file [CakeBuild/Program.cs](CakeBuild/Program.cs).
-It is also used in the games repo to build the game for each platform (Windows x64, Linux x64, MacOs x64) and eventually Arm x64 as well at some point.
-
-But that is not all cake can do for us.
-Since we use the `Cake Frosting` setup which essentially adds another Project to our solution where we can write C# code to define our build and package procedure. Further we added a Json Validation step to it so before a build is made it will verify that all json files are at least parsable by `Newtonsoft.Json` to avoid simple mistakes. And if you want to use any Testing library you can also add it to the Cake build system to run your test when you create a mod.zip for release.
-
-
-## Migrating Mods to .NET 8
-
-To migrate your mod to .NET 8 we would recommend you to create a new project with our new template (checkout our updated [wiki page](https://wiki.vintagestory.at/index.php/Modding:Setting_up_your_Development_Environment) for that) and copy over your old code. Additionally you may need to add any special references you need for your mod.
-
-Then you may have to make some code changes so your mod works with the .NET 8 version of the game. For most mods this should be just minor changes.
-
-Once that is done it should be ready to be started within you preferred IDE. So you can also benefit from new C# 11 language features as well as the cake build system.
+## Notes
+- Tracking applies only in first-person view.
+- If nothing moves, confirm OpenTrack is running and FreeTrack output is enabled.
