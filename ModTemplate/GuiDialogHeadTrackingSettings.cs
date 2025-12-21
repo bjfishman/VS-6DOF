@@ -32,6 +32,12 @@ namespace VSDOF
         private const string KeyCrouchHysteresis = "crouchhysteresis";
         private const string KeyCrouchMode = "crouchmode";
         private const string KeyCrouchAxis = "crouchaxis";
+        private const string KeyEnableLeanToZoom = "enableleantozoom";
+        private const string KeyLeanToZoomThreshold = "leantozoomthreshold";
+        private const string KeyLeanToZoomHysteresis = "leantozoomhysteresis";
+        private const string KeyEnableLeanToZoomAxis = "enableleantozoomaxis";
+        private const string KeyLeanToZoomAxisRange = "leantozoomaxisrange";
+        private const string KeyLeanToZoomAxisMax = "leantozoomaxismax";
 
         private static readonly string[] CrouchModeCodes = { "hold", "toggle" };
         private static readonly string[] CrouchModeNames = { "Hold", "Toggle" };
@@ -78,6 +84,13 @@ namespace VSDOF
             SetNumber(KeyCrouchHysteresis, config.CrouchHysteresis);
             SetDropDown(KeyCrouchMode, config.CrouchMode, CrouchModeCodes);
             SetDropDown(KeyCrouchAxis, config.CrouchAxis, CrouchAxisCodes);
+
+            SetSwitch(KeyEnableLeanToZoom, config.EnableLeanToZoom);
+            SetNumber(KeyLeanToZoomThreshold, config.LeanToZoomThreshold);
+            SetNumber(KeyLeanToZoomHysteresis, config.LeanToZoomHysteresis);
+            SetSwitch(KeyEnableLeanToZoomAxis, config.EnableLeanToZoomAxis);
+            SetNumber(KeyLeanToZoomAxisRange, config.LeanToZoomAxisRange);
+            SetNumber(KeyLeanToZoomAxisMax, config.LeanToZoomAxisMax);
         }
 
         private void ComposeDialog()
@@ -89,12 +102,17 @@ namespace VSDOF
             double switchWidth = 30;
             double rowHeight = 28;
             double colGap = 30;
-            int rows = 11;
+            int leftRows = 10;
+            int rightRows = 10;
+            bool showLeanZoom = VsdofModSystem.IsZoomButtonAvailable;
+            int thirdRows = showLeanZoom ? 6 : 0;
+            int contentRows = Math.Max(leftRows, Math.Max(rightRows, thirdRows));
             double startY = pad + 30;
 
             double colWidth = labelWidth + 10 + dropWidth;
-            double dialogWidth = pad + colWidth + colGap + colWidth + pad;
-            double dialogHeight = startY + rows * rowHeight + pad;
+            int colCount = showLeanZoom ? 3 : 2;
+            double dialogWidth = pad + (colWidth * colCount) + (colGap * (colCount - 1)) + pad;
+            double dialogHeight = startY + (contentRows + 1) * rowHeight + pad;
 
             ElementBounds dialogBounds = ElementBounds
                 .Fixed(0, 0, dialogWidth, dialogHeight)
@@ -111,6 +129,7 @@ namespace VSDOF
 
             double leftX = pad;
             double rightX = leftX + colWidth + colGap;
+            double thirdX = rightX + colWidth + colGap;
             double leftY = startY;
 
             AddSwitchRow(leftX, leftY, labelWidth, switchWidth, rowHeight, labelFont,
@@ -176,9 +195,31 @@ namespace VSDOF
                 "Crouch Axis", KeyCrouchAxis, CrouchAxisCodes, CrouchAxisNames,
                 (code, selected) => UpdateSelection(code, selected, (cfg, v) => cfg.CrouchAxis = v));
 
+            if (showLeanZoom)
+            {
+                double thirdY = startY;
+                AddSwitchRow(thirdX, thirdY, labelWidth, switchWidth, rowHeight, labelFont,
+                    "Enable Lean To Zoom", KeyEnableLeanToZoom, value => UpdateBool(value, (cfg, v) => cfg.EnableLeanToZoom = v));
+                thirdY += rowHeight;
+                AddNumberRow(thirdX, thirdY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
+                    "Zoom Threshold", KeyLeanToZoomThreshold, value => UpdateFloat(value, (cfg, v) => cfg.LeanToZoomThreshold = v));
+                thirdY += rowHeight;
+                AddNumberRow(thirdX, thirdY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
+                    "Zoom Hysteresis", KeyLeanToZoomHysteresis, value => UpdateFloat(value, (cfg, v) => cfg.LeanToZoomHysteresis = v));
+                thirdY += rowHeight;
+                AddSwitchRow(thirdX, thirdY, labelWidth, switchWidth, rowHeight, labelFont,
+                    "Enable Zoom Axis", KeyEnableLeanToZoomAxis, value => UpdateBool(value, (cfg, v) => cfg.EnableLeanToZoomAxis = v));
+                thirdY += rowHeight;
+                AddNumberRow(thirdX, thirdY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
+                    "Zoom Axis Range", KeyLeanToZoomAxisRange, value => UpdateFloat(value, (cfg, v) => cfg.LeanToZoomAxisRange = v));
+                thirdY += rowHeight;
+                AddNumberRow(thirdX, thirdY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
+                    "Zoom Axis Max", KeyLeanToZoomAxisMax, value => UpdateFloat(value, (cfg, v) => cfg.LeanToZoomAxisMax = v));
+            }
+
             double buttonWidth = 160;
             double buttonX = (dialogWidth - buttonWidth) / 2;
-            double buttonY = startY + 10 * rowHeight + 2;
+            double buttonY = startY + contentRows * rowHeight + 2;
             composer.AddButton(
                 "Reset to defaults",
                 OnResetClicked,

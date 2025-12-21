@@ -24,5 +24,12 @@ namespace VSDOF
         public float CrouchHysteresis = 0.05f;
         public string CrouchMode = "hold";
         public string CrouchAxis = "Y";
+
+        public bool EnableLeanToZoom = false;
+        public float LeanToZoomThreshold = 0.2f;
+        public float LeanToZoomHysteresis = 0.05f;
+        public bool EnableLeanToZoomAxis = false;
+        public float LeanToZoomAxisRange = 0.2f;
+        public float LeanToZoomAxisMax = 1.0f;
     }
 }
