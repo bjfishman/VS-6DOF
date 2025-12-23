@@ -100,6 +100,10 @@ namespace VSDOF
                 ty = GameMath.Clamp(ty, -config.MaxTranslationY, config.MaxTranslationY);
                 tz = GameMath.Clamp(tz, -config.MaxTranslationZ, config.MaxTranslationZ);
 
+                tx += config.BaselineOffsetX;
+                ty += config.BaselineOffsetY;
+                tz += config.BaselineOffsetZ;
+
                 double[] translateMatrix = Mat4d.Create();
                 Mat4d.Translate(translateMatrix, translateMatrix, -tx, -ty, -tz);
                 result = Mat4d.Mul(Mat4d.Create(), translateMatrix, result);

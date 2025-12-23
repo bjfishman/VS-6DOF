@@ -27,6 +27,9 @@ namespace VSDOF
         private const string KeyMaxTranslationX = "maxtransx";
         private const string KeyMaxTranslationY = "maxtransy";
         private const string KeyMaxTranslationZ = "maxtransz";
+        private const string KeyBaselineOffsetX = "baselineoffsetx";
+        private const string KeyBaselineOffsetY = "baselineoffsety";
+        private const string KeyBaselineOffsetZ = "baselineoffsetz";
 
         private const string KeyCrouchThreshold = "crouchthreshold";
         private const string KeyCrouchHysteresis = "crouchhysteresis";
@@ -79,6 +82,9 @@ namespace VSDOF
             SetNumber(KeyMaxTranslationX, config.MaxTranslationX);
             SetNumber(KeyMaxTranslationY, config.MaxTranslationY);
             SetNumber(KeyMaxTranslationZ, config.MaxTranslationZ);
+            SetNumber(KeyBaselineOffsetX, config.BaselineOffsetX);
+            SetNumber(KeyBaselineOffsetY, config.BaselineOffsetY);
+            SetNumber(KeyBaselineOffsetZ, config.BaselineOffsetZ);
 
             SetNumber(KeyCrouchThreshold, config.CrouchThreshold);
             SetNumber(KeyCrouchHysteresis, config.CrouchHysteresis);
@@ -103,7 +109,7 @@ namespace VSDOF
             double rowHeight = 28;
             double colGap = 30;
             int leftRows = 10;
-            int rightRows = 10;
+            int rightRows = 14;
             bool showLeanZoom = VsdofModSystem.IsZoomButtonAvailable;
             int thirdRows = showLeanZoom ? 6 : 0;
             int contentRows = Math.Max(leftRows, Math.Max(rightRows, thirdRows));
@@ -180,6 +186,17 @@ namespace VSDOF
             rightY += rowHeight;
             AddNumberRow(rightX, rightY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
                 "Max Translation Z", KeyMaxTranslationZ, value => UpdateFloat(value, (cfg, v) => cfg.MaxTranslationZ = v));
+            rightY += rowHeight;
+            composer.AddStaticText("Baseline Offsets", labelFont, ElementBounds.Fixed(rightX, rightY + 6, labelWidth + inputWidth + 10, rowHeight), null);
+            rightY += rowHeight;
+            AddNumberRow(rightX, rightY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
+                "Baseline Offset X", KeyBaselineOffsetX, value => UpdateFloat(value, (cfg, v) => cfg.BaselineOffsetX = v));
+            rightY += rowHeight;
+            AddNumberRow(rightX, rightY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
+                "Baseline Offset Y", KeyBaselineOffsetY, value => UpdateFloat(value, (cfg, v) => cfg.BaselineOffsetY = v));
+            rightY += rowHeight;
+            AddNumberRow(rightX, rightY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
+                "Baseline Offset Z", KeyBaselineOffsetZ, value => UpdateFloat(value, (cfg, v) => cfg.BaselineOffsetZ = v));
             rightY += rowHeight;
             AddNumberRow(rightX, rightY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
                 "Crouch Threshold", KeyCrouchThreshold, value => UpdateFloat(value, (cfg, v) => cfg.CrouchThreshold = v));
