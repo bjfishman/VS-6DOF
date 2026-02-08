@@ -7,6 +7,7 @@ namespace VSDOF
         public bool EnableTranslation = true;
         public bool EnableRoll = true;
         public bool EnableCrouchToggle = true;
+        public bool DisablePlayerModel = false;
 
         public float YawGain = 2.0f;
         public float PitchGain = 2.2f;

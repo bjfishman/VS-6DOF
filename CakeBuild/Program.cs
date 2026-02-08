@@ -29,12 +29,14 @@ public class BuildContext : FrostingContext
     public string Version { get; }
     public string Name { get; }
     public bool SkipJsonValidation { get; set; }
+    public string TargetFramework { get; }
 
     public BuildContext(ICakeContext context)
         : base(context)
     {
         BuildConfiguration = context.Argument("configuration", "Release");
         SkipJsonValidation = context.Argument("skipJsonValidation", false);
+        TargetFramework = context.Argument("framework", "net8.0");
         var modInfo = context.DeserializeJsonFromFile<ModInfo>($"../{BuildContext.ProjectName}/modinfo.json");
         Version = modInfo.Version;
         Name = modInfo.ModID;
@@ -75,14 +77,16 @@ public sealed class BuildTask : FrostingTask<BuildContext>
         context.DotNetClean($"../{BuildContext.ProjectName}/{BuildContext.ProjectName}.csproj",
             new DotNetCleanSettings
             {
-                Configuration = context.BuildConfiguration
+                Configuration = context.BuildConfiguration,
+                Framework = context.TargetFramework
             });
 
 
         context.DotNetPublish($"../{BuildContext.ProjectName}/{BuildContext.ProjectName}.csproj",
             new DotNetPublishSettings
             {
-                Configuration = context.BuildConfiguration
+                Configuration = context.BuildConfiguration,
+                Framework = context.TargetFramework
             });
     }
 }
@@ -95,15 +99,16 @@ public sealed class PackageTask : FrostingTask<BuildContext>
     {
         context.EnsureDirectoryExists("../Releases");
         context.CleanDirectory("../Releases");
-        context.EnsureDirectoryExists($"../Releases/{context.Name}");
-        context.CopyFiles($"../{BuildContext.ProjectName}/bin/{context.BuildConfiguration}/Mods/mod/publish/*", $"../Releases/{context.Name}");
-        context.CopyDirectory($"../{BuildContext.ProjectName}/assets", $"../Releases/{context.Name}/assets");
-        context.CopyFile($"../{BuildContext.ProjectName}/modinfo.json", $"../Releases/{context.Name}/modinfo.json");
+        var releaseName = $"{context.Name}-{context.TargetFramework}";
+        context.EnsureDirectoryExists($"../Releases/{releaseName}");
+        context.CopyFiles($"../{BuildContext.ProjectName}/bin/{context.BuildConfiguration}/Mods/mod/publish/*", $"../Releases/{releaseName}");
+        context.CopyDirectory($"../{BuildContext.ProjectName}/assets", $"../Releases/{releaseName}/assets");
+        context.CopyFile($"../{BuildContext.ProjectName}/modinfo.json", $"../Releases/{releaseName}/modinfo.json");
         if (context.FileExists($"../{BuildContext.ProjectName}/modicon.png"))
         {
-            context.CopyFile($"../{BuildContext.ProjectName}/modicon.png", $"../Releases/{context.Name}/modicon.png");
+            context.CopyFile($"../{BuildContext.ProjectName}/modicon.png", $"../Releases/{releaseName}/modicon.png");
         }
-        context.Zip($"../Releases/{context.Name}", $"../Releases/{context.Name}_{context.Version}.zip");
+        context.Zip($"../Releases/{releaseName}", $"../Releases/{releaseName}_{context.Version}.zip");
     }
 }
 

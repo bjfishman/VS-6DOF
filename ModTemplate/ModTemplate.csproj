@@ -1,37 +1,73 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\$(Configuration)\Mods\mod</OutputPath>
     <AssemblyName>VSDOF</AssemblyName>
     <RootNamespace>VSDOF</RootNamespace>
     <PackageId>VSDOF</PackageId>
+    <VintagestoryNet8 Condition="'$(VintagestoryNet8)'==''">$(VINTAGE_STORY)</VintagestoryNet8>
+    <VintagestoryNet10 Condition="'$(VintagestoryNet10)'==''">$(VINTAGE_STORY_NET10)</VintagestoryNet10>
   </PropertyGroup>
 
-  <ItemGroup>
+  <Target Name="ValidateVintagestoryPath" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(TargetFramework)'=='net8.0' and !Exists('$(VintagestoryNet8)\\VintagestoryAPI.dll')"
+           Text="Vintagestory net8 API not found. Set VINTAGE_STORY or VintagestoryNet8 to the net8 install path." />
+    <Error Condition="'$(TargetFramework)'=='net10.0' and !Exists('$(VintagestoryNet10)\\VintagestoryAPI.dll')"
+           Text="Vintagestory net10 API not found. Set VINTAGE_STORY_NET10 or VintagestoryNet10 to the net10 install path (or copy the net10 API into a separate folder)." />
+  </Target>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
     <Reference Include="VintagestoryAPI">
-      <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
+      <HintPath>$(VintagestoryNet8)/VintagestoryAPI.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="VSSurvivalMod">
-      <HintPath>$(VINTAGE_STORY)/Mods/VSSurvivalMod.dll</HintPath>
+      <HintPath>$(VintagestoryNet8)/Mods/VSSurvivalMod.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VSEssentials">
-      <HintPath>$(VINTAGE_STORY)/Mods/VSEssentials.dll</HintPath>
+      <HintPath>$(VintagestoryNet8)/Mods/VSEssentials.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VSCreativeMod">
-      <HintPath>$(VINTAGE_STORY)/Mods/VSCreativeMod.dll</HintPath>
+      <HintPath>$(VintagestoryNet8)/Mods/VSCreativeMod.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VintagestoryLib">
-      <HintPath>$(VINTAGE_STORY)/VintagestoryLib.dll</HintPath>
+      <HintPath>$(VintagestoryNet8)/VintagestoryLib.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>$(VINTAGE_STORY)/Lib/Newtonsoft.Json.dll</HintPath>
+      <HintPath>$(VintagestoryNet8)/Lib/Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
+    <Reference Include="VintagestoryAPI">
+      <HintPath>$(VintagestoryNet10)/VintagestoryAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VSSurvivalMod">
+      <HintPath>$(VintagestoryNet10)/Mods/VSSurvivalMod.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VSEssentials">
+      <HintPath>$(VintagestoryNet10)/Mods/VSEssentials.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VSCreativeMod">
+      <HintPath>$(VintagestoryNet10)/Mods/VSCreativeMod.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VintagestoryLib">
+      <HintPath>$(VintagestoryNet10)/VintagestoryLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(VintagestoryNet10)/Lib/Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

@@ -15,6 +15,7 @@ namespace VSDOF
         private const string KeyEnableTranslation = "enabletranslation";
         private const string KeyEnableRoll = "enableroll";
         private const string KeyEnableCrouch = "enablecrouch";
+        private const string KeyDisablePlayerModel = "disableplayermodel";
 
         private const string KeyYawGain = "yawg";
         private const string KeyPitchGain = "pitchg";
@@ -47,12 +48,12 @@ namespace VSDOF
         private static readonly string[] CrouchAxisCodes = { "X", "Y", "Z" };
         private static readonly string[] CrouchAxisNames = { "X", "Y", "Z" };
 
-        private readonly ICoreClientAPI capi;
+        private readonly ICoreClientAPI clientApi;
         private GuiComposer composer;
 
         public GuiDialogHeadTrackingSettings(ICoreClientAPI capi) : base(capi)
         {
-            this.capi = capi;
+            clientApi = capi;
         }
 
         public override string ToggleKeyCombinationCode => null;
@@ -70,6 +71,7 @@ namespace VSDOF
             SetSwitch(KeyEnableTranslation, config.EnableTranslation);
             SetSwitch(KeyEnableRoll, config.EnableRoll);
             SetSwitch(KeyEnableCrouch, config.EnableCrouchToggle);
+            SetSwitch(KeyDisablePlayerModel, config.DisablePlayerModel);
 
             SetNumber(KeyYawGain, config.YawGain);
             SetNumber(KeyPitchGain, config.PitchGain);
@@ -108,7 +110,7 @@ namespace VSDOF
             double switchWidth = 30;
             double rowHeight = 28;
             double colGap = 30;
-            int leftRows = 10;
+            int leftRows = 11;
             int rightRows = 14;
             bool showLeanZoom = VsdofModSystem.IsZoomButtonAvailable;
             int thirdRows = showLeanZoom ? 6 : 0;
@@ -126,7 +128,7 @@ namespace VSDOF
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(pad);
 
             composer?.Dispose();
-            composer = capi.Gui.CreateCompo(DialogKey, dialogBounds)
+            composer = clientApi.Gui.CreateCompo(DialogKey, dialogBounds)
                 .AddGrayBG(bgBounds)
                 .AddDialogTitleBar("VSDOF Head Tracking", OnTitleBarClose);
 
@@ -152,6 +154,9 @@ namespace VSDOF
             leftY += rowHeight;
             AddSwitchRow(leftX, leftY, labelWidth, switchWidth, rowHeight, labelFont,
                 "Enable Crouch", KeyEnableCrouch, value => UpdateBool(value, (cfg, v) => cfg.EnableCrouchToggle = v));
+            leftY += rowHeight;
+            AddSwitchRow(leftX, leftY, labelWidth, switchWidth, rowHeight, labelFont,
+                "Disable Player Model", KeyDisablePlayerModel, UpdateDisablePlayerModel);
             leftY += rowHeight;
             AddNumberRow(leftX, leftY, labelWidth, inputWidth, rowHeight, labelFont, inputFont,
                 "Yaw Gain", KeyYawGain, value => UpdateFloat(value, (cfg, v) => cfg.YawGain = v));
@@ -306,6 +311,7 @@ namespace VSDOF
             VsdofModSystem.Config = new HeadTrackingConfig();
             StoreConfig();
             SyncValues();
+            PlayerModelVisibilityPatch.RequestRetessellate();
             return true;
         }
 
@@ -324,13 +330,19 @@ namespace VSDOF
 
         private void StoreConfig()
         {
-            capi.StoreModConfig(Config, ConfigFileName);
+            clientApi.StoreModConfig(Config, ConfigFileName);
         }
 
         private void UpdateBool(bool value, Action<HeadTrackingConfig, bool> apply)
         {
             apply(Config, value);
             StoreConfig();
+        }
+
+        private void UpdateDisablePlayerModel(bool value)
+        {
+            UpdateBool(value, (cfg, v) => cfg.DisablePlayerModel = v);
+            PlayerModelVisibilityPatch.RequestRetessellate();
         }
 
         private void UpdateSelection(string code, bool selected, Action<HeadTrackingConfig, string> apply)
