@@ -10,7 +10,7 @@
 - Tracking suspended when the game is paused or the escape menu is open.
 
 ## Requirements
-- Vintage Story client (net8 build).
+- Vintage Story client (net8 or net10 build).
 - OpenTrack (or another tracker that can output FreeTrack shared memory).
 - A head tracking source (TrackIR, webcam tracker, phone tracker, etc.).
 
@@ -34,7 +34,10 @@ You can edit values directly or use the in-game dialog:
 - Crouch threshold, hysteresis, axis (X/Y/Z), and mode (hold/toggle).
 
 ## Build (from source)
-- Open project in VS Code -> Terminal -> Run Task -> "package"
+- Open project in VS Code
+- Open new terminal
+- Set your environment (net8 or net10): $env:VINTAGE_STORY_NET10 = "C:\Vintagestory" or $env:VINTAGE_STORY_NET8 = "K:\Vintagestory"
+- Build with dotnet run --project .\CakeBuild\CakeBuild.csproj -- --framework net10.0 (or net8.0)
 
 ## Notes
 - Tracking applies only in first-person view.
